@@ -1,0 +1,29 @@
+{
+  "name": "nano-chan",
+  "version": "1.0.0",
+  "description": "An IRC bot written in node.js",
+  "main": "bot.coffee",
+  "scripts": {
+    "test": "coffee bot.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuclearcoconut42/nano-chan.git"
+  },
+  "author": "Elliot Brock <nuclearcoconut86@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nuclearcoconut42/nano-chan/issues"
+  },
+  "homepage": "https://github.com/nuclearcoconut42/nano-chan#readme",
+  "dependencies": {
+    "irc": "^0.5.2",
+    "lastfm-njs": "^0.2.4",
+    "lodash": "^4.17.2",
+    "mongoose": "^4.7.0",
+    "node-metainspector": "^1.3.0",
+    "q": "^1.4.1",
+    "require-dir": "^0.3.1",
+    "valid-url": "^1.0.9"
+  }
+}
