@@ -21,5 +21,5 @@ outputs =
   "Outlook not so good",
   "Very doubtful"]
 module.exports =
-  func: (message, nick, cb) -> cb _.sample outputs
+  func: (message, nick, cb) -> cb "#{nick}: #{_.sample outputs}"
   help: "Magic eight ball!"

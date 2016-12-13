@@ -7,25 +7,25 @@ User = mongoose.model('User', userSchema)
 anilist = (message, nick, cb) ->
 	args = message.split ' '
 	if args.length == 1
-		viewAnilist nick
+		viewAnilist nick, cb
 	else
 		switch args[1]
 			when "-s", "--set"
-				checkUser nick, message.replace(/\S+/, '').trim()
-			else viewAnilist args[1]
+				checkUser nick, args[2..].join(' '), cb
+			else viewAnilist args[1], cb
 
-viewAnilist = (nick) ->
+viewAnilist = (nick, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
 			if doc.anilist
-				doc.anilist
+				cb doc.anilist
 			else
 				cb "No anilist found for #{nick}."
 		else
 			cb "No anilist found for #{nick}."
 
-checkUser = (nick, anilist) ->
+checkUser = (nick, anilist, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
@@ -39,9 +39,9 @@ checkUser = (nick, anilist) ->
 				else
 					if changed then cb "Saved anilist."
 		if !doc
-			addUser nick, anilist
+			addUser nick, anilist, cb
 
-addUser = (nick, anilist) ->
+addUser = (nick, anilist, cb) ->
 	if validUrl.isUri anilist
 		newUser = new User
 			nick: nick

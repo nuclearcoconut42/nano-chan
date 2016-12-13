@@ -6,25 +6,25 @@ User = mongoose.model('User', userSchema)
 distro = (message, nick, cb) ->
 	args = message.split ' '
 	if args.length == 1
-		viewDistro nick
+		viewDistro nick, cb
 	else
 		switch args[1]
 			when "-s", "--set"
-				checkUser nick, message.replace(/\S+/, '').trim()
-			else viewDistro args[1]
+				checkUser nick, args[2..].join(' '), cb
+			else viewDistro args[1], cb
 
-viewDistro = (nick) ->
+viewDistro = (nick, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
 			if doc.distro
-				doc.distro
+				cb doc.distro
 			else
 				cb "No distro found for #{nick}."
 		else
 			cb "No distro found for #{nick}."
 
-checkUser = (nick, distro) ->
+checkUser = (nick, distro, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
@@ -32,12 +32,11 @@ checkUser = (nick, distro) ->
 			changed = true
 			doc.save (err) ->
 				if err then console.error "An error occurred: #{err}"
-				else
-					if changed then cb "Saved distro."
+				else if changed then cb "Saved distro."
 		if !doc
-			addUser nick, distro
+			addUser nick, distro, cb
 
-addUser = (nick, distro) ->
+addUser = (nick, distro, cb) ->
 	newUser = new User
 		nick: nick
 		distro: distro

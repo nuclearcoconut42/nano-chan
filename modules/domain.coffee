@@ -5,27 +5,27 @@ validUrl = require "valid-url"
 User = mongoose.model('User', userSchema)
 
 domain = (message, nick, cb) ->
-	args = message.split(' ')[1..]
-	if args.length == 0
-		viewDomain nick
+	args = message.split ' '
+	if args.length == 1
+		viewDomain nick, cb
 	else
-		switch args[0]
+		switch args[1]
 			when "-s", "--set"
-				checkUser nick, message.replace(/\S+/, '').trim()
-			else viewDomain args[0]
+				checkUser nick, args[2..].join(' '), cb
+			else viewDomain args[1], cb
 
-viewDomain = (nick) ->
+viewDomain = (nick, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
 			if doc.domain
-				doc.domain
+				cb doc.domain
 			else
 				cb "No domain found for #{nick}."
 		else
 			cb "No domain found for #{nick}."
 
-checkUser = (nick, domain) ->
+checkUser = (nick, domain, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
@@ -37,11 +37,11 @@ checkUser = (nick, domain) ->
 			doc.save (err) ->
 				if err then console.error "An error occurred: #{err}"
 				else
-					if changed then "Saved domain."
+					if changed then cb "Saved domain."
 		if !doc
-			addUser nick, domain
+			addUser nick, domain, cb
 
-addUser = (nick, domain) ->
+addUser = (nick, domain, cb) ->
 	if validUrl.isUri domain
 		newUser = new User
 			nick: nick

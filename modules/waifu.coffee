@@ -38,12 +38,9 @@ checkUser = (nick, waifu) ->
 			addUser nick, waifu
 
 addUser = (nick, waifu) ->
-	if validUrl.isUri waifu
-		newUser = new User
-			nick: nick
-			waifu: waifu
-	else
-		cb "Invalid URL detected."
+	newUser = new User
+		nick: nick
+		waifu: waifu
 	newUser.save (err) ->
 		if err then console.err "An error occurred: #{err}"
 		else

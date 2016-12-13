@@ -14,7 +14,7 @@ wm = (message, nick, cb) ->
           checkUser nick, args[1..].join(" ")
         else
           checkUser nick, "", cb
-      else viewWm to, args[0], cb
+      else viewWm args[0], cb
 
 viewWm = (nick, cb) ->
   User.findOne {nick: nick}, (err, doc) ->

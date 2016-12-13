@@ -43,12 +43,17 @@ db.once 'open', ->
 		else if message.match /^\.help/
 			bot.say from, "List of commands: #{JSON.stringify Object.keys(modules)}"
 			bot.say from, "Find help on individual commands with ?[command] (without brackets)"
+		else if message.match /^\.\S+ (-h)|(--help)/
+			split = message.split ' '
+			command = split[0].substring 1
+			if modules[command] then bot.say to, "#{from}: #{modules[command].help}"
+			else if alias[command] then bot.say to, "#{from}: #{alias[command].help}"
 		else if message.match /^\./
 			split = message.split ' '
 			command = split[0].substring 1
 			if modules[command] then modules[command].func message, from, (x) -> bot.say to, x.replace /\\r/, ''
 			else if alias[command] then alias[command].func message, from, (x) -> bot.say to, x, x.replace /\\r/, ''
-		else if message.match /^\?./
+		else if message.match /^\?/
 			split = message.split ' '
 			command = split[0].substring 1
 			if modules[command] then bot.say to, "#{from}: #{modules[command].help}"
@@ -64,7 +69,7 @@ db.once 'open', ->
 			args = split[1..]
 			if modules[command] then modules[command].func message, from, (x) -> bot.say from, x.replace /\\r/, ''
 			else if alias[command] then alias[command].func message, from, (x) -> bot.say from, x.replace /\\r/, ''
-		else if message.match /^\?./
+		else if message.match /^\?/
 			split = message.split ' '
 			command = split[0].substring 1
 			if modules[command] then bot.say from, "#{from}: #{modules[command].help}"

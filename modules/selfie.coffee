@@ -4,33 +4,33 @@ mongoose = require "mongoose"
 
 User = mongoose.model('User', userSchema)
 
-selfie = (message, nick) ->
+selfie = (message, nick, cb) ->
   args = message.split(' ')[1..]
   if args.length == 0
-    viewSelfies nick
+    viewSelfies nick, cb
   else
     switch args[0]
       when "-a", "--add"
         if args.length > 1
           if args[1..].every((url) -> validUrl.isUri(url))
-            checkUser nick, args[1..]
+            checkUser nick, args[1..], cb
           else
             cb "Invalid URL detected."
         else
           cb "Arguments are required for -a."
       when "-d", "--delete", "--remove"
         if args.length > 1
-          deleteSelfie nick, args[1..]
+          deleteSelfie nick, args[1..], cb
         else
           cb "Arguments are required for -d."
       when "-r", "--replace"
         if data.args.length > 1
-          replaceSelfie nick, data.args[1..]
+          replaceSelfie nick, data.args[1..], cb
         else
           cb "Arguments are required for -r."
-      else viewSelfies args[0]
+      else viewSelfies args[0], cb
 
-viewSelfies = (nick) ->
+viewSelfies = (nick, cb) ->
   User.findOne {nick: nick}, (err, doc) ->
     if err then console.error "An error occurred: #{err}"
     if doc
@@ -47,7 +47,7 @@ viewSelfies = (nick) ->
     else
       cb "No selfies found for #{nick}."
 
-checkUser = (nick, urls) ->
+checkUser = (nick, urls, cb) ->
   User.findOne {nick: nick}, (err, doc) ->
     if err then console.error "An error occurred: #{err}"
     if doc
@@ -60,7 +60,7 @@ checkUser = (nick, urls) ->
     if !doc
       addUser nick, urls
 
-addUser = (nick, urls) ->
+addUser = (nick, urls, cb) ->
   newUser = new User
     nick: nick
     selfies: urls
@@ -70,7 +70,7 @@ addUser = (nick, urls) ->
       if urls.length > 1 then cb "Saved new selfies."
       else cb "Saved new selfie."
 
-deleteSelfie = (nick, args) ->
+deleteSelfie = (nick, args, cb) ->
   User.findOne {nick: nick}, (err, doc) ->
     if err then console.error "An error occurred: #{err}"
     if doc
@@ -111,7 +111,7 @@ deleteSelfie = (nick, args) ->
               if err then console.error "An error occurred: #{err}"
     else cb "You don't have any selfies to delete."
 
-replaceSelfie = (nick, args) ->
+replaceSelfie = (nick, args, cb) ->
   User.findOne {nick: nick}, (err, doc) ->
     if err then console.error "An error occured: #{err}"
     else
