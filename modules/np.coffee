@@ -5,20 +5,20 @@ config = require "../config.coffee"
 
 User = mongoose.model('User', userSchema)
 
-np = (message, nick) ->
+np = (message, nick, cb) ->
 	args = message.split(' ')[1..]
 	if args.length == 0
-		nowplaying nick
+		nowplaying nick, cb
 	else
 		switch args[0]
 			when "-s", "--set"
 				if args.length > 1
-					checkUser data.from, data.to, args[1], bot
+					checkUser nick, args[1], cb
 				else
 					checkUser data.from, data.to, "", bot
-			else nowplaying data.to, args[0], bot
+			else nowplaying args[0], cb
 
-nowplaying = (nick) ->
+nowplaying = (nick, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		else if doc && doc.lastfm
@@ -37,7 +37,7 @@ nowplaying = (nick) ->
 		else
 			cb "No last.fm account found for #{nick}."
 
-checkUser = (nick, channel, lastfm, bot) ->
+checkUser = (nick, lastfm, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
@@ -49,7 +49,7 @@ checkUser = (nick, channel, lastfm, bot) ->
 		if !doc
 			addUser nick, channel, lastfm, bot
 
-addUser = (nick, channel, lastfm, bot) ->
+addUser = (nick, lastfm, cb) ->
 	newUser = new User
 		nick: nick
 		lastfm: lastfm
