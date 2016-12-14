@@ -5,47 +5,47 @@ validUrl = require "valid-url"
 User = mongoose.model('User', userSchema)
 
 github = (message, nick, cb) ->
-	args = message.split(' ')[1..]
-	if args.length == 0
-		viewGithub nick
+	args = message.split ' '
+	if args.length == 1
+		viewGithub nick, cb
 	else
-		switch args[0]
+		switch args[1]
 			when "-s", "--set"
-				checkUser nick, message.replace(/\S+/, '').trim()
-			else viewGithub args[0]
+				checkUser nick, args[2..].join(' '), cb
+			else viewGithub args[1], cb
 
-viewGithub = (nick) ->
+viewGithub = (nick, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
 			if doc.github
-				doc.github
+				cb doc.github
 			else
 				cb "No github found for #{nick}."
 		else
 			cb "No github found for #{nick}."
 
-checkUser = (nick, github) ->
+checkUser = (nick, github, cb) ->
 	User.findOne {nick: nick}, (err, doc) ->
 		if err then console.error "An error occurred: #{err}"
 		if doc
 			if validUrl.isUri(github)
-				doc.github = github
+				doc.github = anilist
 				changed = true
 			else
 				cb "Invalid URL detected."
 			doc.save (err) ->
 				if err then console.error "An error occurred: #{err}"
 				else
-					if changed then "Saved github."
+					if changed then cb "Saved github."
 		if !doc
-			addUser nick, github
+			addUser nick, github, cb
 
-addUser = (nick, github) ->
+addUser = (nick, github, cb) ->
 	if validUrl.isUri github
 		newUser = new User
 			nick: nick
-			github: github
+			github: anilist
 	else
 		cb "Invalid URL detected."
 	newUser.save (err) ->
@@ -55,4 +55,4 @@ addUser = (nick, github) ->
 
 module.exports =
 	func: github
-	help: "Save github: .github -s github"
+	help: "Save github: .anilist -s anilist"
