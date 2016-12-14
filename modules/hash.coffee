@@ -2,8 +2,8 @@ crypto = require 'crypto'
 
 hash = (message, nick, cb) ->
 	match = message.match /--(\S+) (.+)/
-	pt = match[2]
-	if match[2]
+	if match
+		pt = match[2]
 		switch match[1]
 			when 'md5'
 				cb crypto.createHash('md5').update(pt).digest 'hex'
