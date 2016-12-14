@@ -7,7 +7,6 @@ assert = require "assert"
 mongoose.Promise = require('q').Promise
 
 User = mongoose.model 'User', userSchema, 'users'
-
 dtop = (message, nick, cb) ->
 	args = message.split ' '
 	if args.length == 1
@@ -96,8 +95,8 @@ viewDtops = (nick, tags, requester, cb) ->
 				ret = "(#{nick}) "
 				doc.dtops.forEach (element, index) ->
 					ret += "[#{index+1}] #{element.dtop} #{JSON.stringify element.tags} "
-				if ret then cb ret.trim()
-				else cb "#{requester}: No desktops found for #{nick}."
+			if ret then cb ret.trim()
+			else cb "#{requester}: No desktops found for #{nick}."
 
 
 findByTags = (tags, cb) ->
